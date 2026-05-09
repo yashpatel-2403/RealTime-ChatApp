@@ -1,0 +1,14 @@
+import express from "express";
+import { Login, Logout, signup, updateProfile } from "../controllers/auth.controllers.js";
+
+
+const router = express.Router();
+
+router.post("/signup", signup);
+router.post("/login", Login);
+router.post("/logout", Logout);
+
+router.put("/update-profile" , updateProfile);
+
+
+export default router;
