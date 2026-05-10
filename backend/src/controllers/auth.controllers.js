@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import User from "../models/user.model.js"
 import { generateToken } from "../utils/utils.js";
+import cloudinary from "../lib/cloudinary.js"
 
 
 
@@ -89,9 +90,43 @@ export const Login = async (req, res) => {
 }
 
 
-export const Logout = async (req, res) => { }
+export const Logout = async (req, res) => {
+    try {
+        res.clearCookie("jwt", {
+            httpOnly: true,
+            sameSite: "strict",
+            secure: process.env.NODE_ENV !== "development",
+        });
+        res.status(200).json({message:"Logged out successfully"});
+
+
+    } catch (error) {
+        console.log("Error in Logout controller: ", error.message);
+        res.status(500).json({message: "Internal server Error"});
+    }
+}
 
 
 export const updateProfile = async (req, res) => {
+    try {
+        const {profilePic} = req.body;
 
+        const userId = req.user._id;
+
+        if(!profilePic){
+            return res.status(400).json({message: "Profile Picture is required"});
+        }
+
+        const uploadResponse = await cloudinary.uploader.upload(profilePic);
+        const updatedUser = await User.findById(userId,
+            {profilePic:uploadResponse.secure_url},
+            {new:true}
+        )
+
+        res.status(200).json({updatedUser})
+
+    } catch (error) {
+        console.log("Error in updateprofile controller: ", error.message);
+        res.status(500).json({message: "Internal server Error"});
+    }
 }
