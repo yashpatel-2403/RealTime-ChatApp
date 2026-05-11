@@ -1,5 +1,5 @@
 import express from "express";
-import { Login, Logout, signup, updateProfile } from "../controllers/auth.controllers.js";
+import { checkAuth, Login, Logout, signup, updateProfile } from "../controllers/auth.controllers.js";
 import { protectRoute } from "../middleware/auth.middleware.js";
 
 
@@ -10,6 +10,8 @@ router.post("/login", Login);
 router.post("/logout", Logout);
 
 router.put("/update-profile",protectRoute, updateProfile);
+
+router.get("check", protectRoute, checkAuth)
 
 
 export default router;
